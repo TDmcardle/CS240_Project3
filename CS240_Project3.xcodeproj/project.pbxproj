@@ -7,8 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E0ADD6AE1822F1F8003A5CFF /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = E0ADD6AD1822F1F8003A5CFF /* main.c */; };
+		E0A9CB6F18247D94007B18BF /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = E0A9CB6E18247D94007B18BF /* Makefile */; };
 		E0ADD6B01822F1F8003A5CFF /* CS240_Project3.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = E0ADD6AF1822F1F8003A5CFF /* CS240_Project3.1 */; };
+		E0ADD6C11822F2DC003A5CFF /* backup.c in Sources */ = {isa = PBXBuildFile; fileRef = E0ADD6C01822F2DC003A5CFF /* backup.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,9 +26,14 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		E0A06BC71829B443006167DE /* log.new */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = log.new; sourceTree = "<group>"; };
+		E0A9CB6E18247D94007B18BF /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		E0ABA0631828623F0058017A /* log.last */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = log.last; sourceTree = "<group>"; };
+		E0ABA0651828624C0058017A /* log.new */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = log.new; sourceTree = "<group>"; };
 		E0ADD6A91822F1F8003A5CFF /* CS240_Project3 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CS240_Project3; sourceTree = BUILT_PRODUCTS_DIR; };
-		E0ADD6AD1822F1F8003A5CFF /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		E0ADD6AF1822F1F8003A5CFF /* CS240_Project3.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = CS240_Project3.1; sourceTree = "<group>"; };
+		E0ADD6BB1822F25C003A5CFF /* backup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = backup.h; sourceTree = "<group>"; };
+		E0ADD6C01822F2DC003A5CFF /* backup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = backup.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -41,6 +47,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		E0A06BC61829B443006167DE /* backupDir */ = {
+			isa = PBXGroup;
+			children = (
+				E0A06BC71829B443006167DE /* log.new */,
+			);
+			path = backupDir;
+			sourceTree = "<group>";
+		};
 		E0ADD69E1822F1F8003A5CFF = {
 			isa = PBXGroup;
 			children = (
@@ -60,8 +74,13 @@
 		E0ADD6AC1822F1F8003A5CFF /* CS240_Project3 */ = {
 			isa = PBXGroup;
 			children = (
-				E0ADD6AD1822F1F8003A5CFF /* main.c */,
 				E0ADD6AF1822F1F8003A5CFF /* CS240_Project3.1 */,
+				E0A9CB6E18247D94007B18BF /* Makefile */,
+				E0ABA0631828623F0058017A /* log.last */,
+				E0ABA0651828624C0058017A /* log.new */,
+				E0ADD6C01822F2DC003A5CFF /* backup.c */,
+				E0ADD6BB1822F25C003A5CFF /* backup.h */,
+				E0A06BC61829B443006167DE /* backupDir */,
 			);
 			path = CS240_Project3;
 			sourceTree = "<group>";
@@ -117,7 +136,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E0ADD6AE1822F1F8003A5CFF /* main.c in Sources */,
+				E0ADD6C11822F2DC003A5CFF /* backup.c in Sources */,
+				E0A9CB6F18247D94007B18BF /* Makefile in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -210,6 +230,7 @@
 				E0ADD6B51822F1F8003A5CFF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
