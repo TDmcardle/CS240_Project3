@@ -5,4 +5,9 @@ DT_DIR	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	empty
 DT_DIR	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	cs240
 DT_REG	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	boss.jpg
 DT_DIR	238	Tue Nov  5 15:25:13 2013	Tue Nov  5 15:25:13 2013	..
-DT_DIR	442	Thu Nov  7 18:11:52 2013	Thu Nov  7 18:11:52 2013	.
+DT_DIR	442	Fri Nov  8 20:43:38 2013	Fri Nov  8 20:43:38 2013	.
+
+LogFile_v1.0
+First version of the log file.
+
+Previously submitted to AutoGrader and received 24

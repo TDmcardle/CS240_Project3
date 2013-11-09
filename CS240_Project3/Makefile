@@ -23,7 +23,7 @@ CFILES = backup.c
 DEPS = $(HFILES) $(CFILES)
 
 # Compile 
-COMPILE = CC -std=c99
+COMPILE = $(CC) #-std=c89
 
 # Run the Symbolic Target
 RUNTARGET = ./$@
