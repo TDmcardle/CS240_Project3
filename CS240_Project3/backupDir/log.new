@@ -1,7 +1,20 @@
-DT_REG	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	in-class journal.jnt
-	DT_DIR	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	engl106
-	DT_DIR	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	empty2
-	DT_DIR	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	empty
-	DT_DIR	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	cs240
-DT_REG	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	boss.jpg
 DT_REG	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	.DS_Store
+DT_REG	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	boss.jpg
+DT_DIR	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	cs240
+    DT_REG	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	hello.c
+    DT_REG	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	hello.exe
+    DT_REG	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	hello.s
+    DT_DIR	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	solution
+        DT_REG	7128	Mon Nov 11 05:26:23 2013	Mon Nov 11 05:26:23 2013	backup.c
+DT_DIR	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	empty
+    DT_DIR	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	Empty
+DT_DIR	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	empty2
+    DT_DIR	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	seriously
+        DT_DIR	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	kidding
+            DT_REG	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	arribba.wav
+            DT_REG	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	LICENSE
+            DT_DIR	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	real-empty
+DT_DIR	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	engl106
+    DT_REG	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	essay.pdf
+    DT_REG	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	essay.docx
+DT_REG	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	in-class journal.jnt

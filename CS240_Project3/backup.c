@@ -47,7 +47,9 @@ struct node *NewNode(struct node *next){
 char writeDirToFile(FILE *fLN, char *cSD);
 char *removeLastChar (char *str);
 char *getType(unsigned char t);
-int dontInclude(struct dirent *d);
+int *dontInclude(const struct dirent *d);
+int sort_atoz(const void *i1, const void *i2);
+void listdir(FILE *f, const char *name, int level);
 
 
 
@@ -143,22 +145,81 @@ int main(int argc, char * argv[]){
  * @param	char *logFilePath	destination directory name used to store the logfile
  */
 void createLog(char *sourceDir, char *logFilePath){
-	strcat(logFilePath, "/");					/* prepares the file path for a new file path */
-	strcat(logFilePath, LOG_NEW_FILENAME);		/* adds new log filename to file path */
-	FILE *logNew = fopen(logFilePath, "w+");	/* opens files for writing and reading */
-
-	writeDirToFile(logNew, sourceDir);
+	char path[100];
+	snprintf(path, sizeof(path)-1, "%s/%s", logFilePath, LOG_NEW_FILENAME);
+	FILE *logNew = fopen(path, "w+");	/* opens files for writing and reading */
+	
+	listdir(logNew, sourceDir, 0);
+//	writeDirToFile(logNew, sourceDir);
 	
 	fclose(logNew);		/* close logNew file */
 }
 
+
+void listdir(FILE *f, const char *name, int level)
+{
+    DIR *dir;
+    struct dirent **entry;
+	struct stat *st = (struct stat*) malloc(sizeof(struct stat));
+    if (!(dir = opendir(name)))
+        return;
+	int n = scandir(name, &entry,NULL, sort_atoz);
+	
+	while(n--){
+		stat(entry[n]->d_name, st);	/* create statistics for directory */
+        if (entry[n]->d_type == DT_DIR) {
+            char path[100];
+            int len = snprintf(path, sizeof(path)-1, "%s/%s", name, entry[n]->d_name);
+            path[len] = 0;
+            if (strcmp(entry[n]->d_name, ".") == 0 || strcmp(entry[n]->d_name, "..") == 0)
+                continue;
+			fprintf(f, "%*s%s\t%ld\t%s\t%s\t%s\n",
+					level*4, "",
+					getType(entry[n]->d_type),
+					(long)st->st_size,
+					removeLastChar(ctime(&(st->st_ctime))),
+					removeLastChar(ctime(&(st->st_mtime))),
+					entry[n]->d_name);
+            listdir(f, path, level + 1);
+        }
+		else
+			fprintf(f, "%*s%s\t%ld\t%s\t%s\t%s\n",
+					level*4, "",
+					getType(entry[n]->d_type),
+					(long)st->st_size,
+					removeLastChar(ctime(&(st->st_ctime))),
+					removeLastChar(ctime(&(st->st_mtime))),
+					entry[n]->d_name);
+	}
+    closedir(dir);
+	free(st);
+}
+
+int sort_atoz(const void *i1, const void *i2){
+	
+	int item1 = *(int*)i1;
+	int item2 = *(int*)i2;
+	
+	if(item1 < item2){
+		return 1;
+	}
+	else if(item1 == item2){
+		return 0;
+	}
+	else{
+		return -1;
+	}
+}
 
 /**
  * @param	FILE *fLN			new log file
  * @param	char *cSD			source directory name
  */
 char writeDirToFile(FILE *fLN, char *cSD){
-	struct stat *st = malloc(sizeof(struct stat));
+	struct node *curr, *head;
+	head = NULL;
+	curr = NewNode(head);
+	struct stat *st = (struct stat*) malloc(sizeof(struct stat));
 	struct dirent **nameList;
     int count = scandir(cSD, &nameList, dontInclude, alphasort);
 	long isDirectory = 0;
@@ -180,7 +241,7 @@ char writeDirToFile(FILE *fLN, char *cSD){
 		if (isDirectory == DT_DIR){						/* Checks if file is directory */
 //			struct dirent **nameListCopy = nameList;
 //			writeDirToFile(fLN, nameListCopy[count]->d_name);/* Recursively writes directories to file */
-			scandir(nameList[count]->d_name, &nameList, NULL, alphasort);
+//			scandir(nameList[count]->d_name, &nameList, NULL, alphasort);
 
 		}
 		
@@ -195,11 +256,11 @@ char writeDirToFile(FILE *fLN, char *cSD){
  * @return	0			If directory entry IS NOT to be included
  * @return	non-zero	If directory entry IS to be included
  */
-int dontInclude(struct dirent *d){
+int *dontInclude(const struct dirent *d){
 	if (!strcmp(d->d_name,".") || !strcmp(d->d_name,".."))
-		return 0;
+		return (int *)0;
 	else
-		return 1;
+		return (int *)1;
 }
 
 /**
