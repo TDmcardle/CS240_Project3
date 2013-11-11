@@ -36,6 +36,7 @@ int main(int argc, char * argv[]){
 	char *pDDN = &destDirName[0];		/* pointer to the destination directory name */
 	int i = 0;
 	
+
 	/*---------------------------------ARGS-------------------------------------------------------*/
 	/**
 	 * Search the arguments for source directory (-s), destination directory (-d), and maximum
@@ -119,21 +120,28 @@ void createLog(char *sourceDir, char *logFilePath){
 	strcat(logFilePath, "/");					/* prepares the file path for a new file path */
 	strcat(logFilePath, LOG_NEW_FILENAME);		/* adds new log filename to file path */
 	FILE *logNew = fopen(logFilePath, "w+");	/* opens files for writing and reading */
-//	DIR *srcDir = opendir(sourceDir);			/* creating directory based on the sourceDir name
-//												 * passed into createLog() */
+
 	writeDirToFile(logNew, sourceDir);
 	
 	fclose(logNew);		/* close logNew file */
-//	closedir (srcDir);	/* close srcDir file */
 }
 
 
+/**
+ * @param	FILE *fLN			new log file
+ * @param	char *cSD			source directory name
+ */
 char writeDirToFile(FILE *fLN, char *cSD){
 	struct stat *st = malloc(sizeof(struct stat));
 	struct dirent **nameList;
     int count = scandir(cSD, &nameList, NULL, alphasort);
+	long isDirectory = 0;
+	
 	while(count--){
 		stat(nameList[count]->d_name, st);	/* create statistics for directory */
+		if ((isDirectory = nameList[count]->d_type) == DT_DIR){			/* Checks if file is directory */
+			fprintf(fLN, "\t");
+		}
 		
 		/* prints data type, data size, creation time, last modification time, and data name to log file */
 		fprintf(fLN, "%s\t%ld\t%s\t%s\t%s\n",
@@ -142,6 +150,13 @@ char writeDirToFile(FILE *fLN, char *cSD){
 				removeLastChar(ctime(&(st->st_ctime))),	/* CreationTimeStamp */
 				removeLastChar(ctime(&(st->st_mtime))),	/* ModificationTimeStamp */
 				nameList[count]->d_name);				/* DataName */
+		
+		if (isDirectory == DT_DIR){						/* Checks if file is directory */
+			struct dirent **nameListCopy = nameList;
+//			writeDirToFile(fLN, nameListCopy[count]->d_name);/* Recursively writes directories to file */
+			scandir(cSD, &nameList, NULL, alphasort);
+
+		}
 		
 		free(nameList[count]);
 	}

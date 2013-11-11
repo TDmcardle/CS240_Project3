@@ -12,7 +12,7 @@
 .PHONY: target
 
 # List of flags to pass to the compilation command
-CFLAGS =
+CFLAGS = -g
 
 # CC is the C compiler to use
 CC = gcc
@@ -39,6 +39,6 @@ all: target
 target: backup.c
 	$(COMPILE) -o $@ $^
 	$(RUNTARGET) -s ./userData -d ./backupDir -m 12
-	
+
 
 #------------- End Symbolic Targets ---------------------------------#
