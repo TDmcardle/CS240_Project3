@@ -21,9 +21,35 @@
 /*------------------------------------------------------------------------------------------------*/
 /*------------------------------------------------------------------------------------------------*/
 
+struct node{
+	struct node *next;
+	int val;
+	struct dirent **nL;
+};
+
+struct node *NewNode(struct node *next){
+	struct node *ret = (struct node*) malloc(sizeof(struct node));
+	
+	if (next){
+		ret->next = next;
+		ret->val = next->val + 1;
+	}
+	else{
+		ret->val = 0;
+	}
+	
+	ret->next = NULL;
+	
+	return ret;
+}
+
+
 char writeDirToFile(FILE *fLN, char *cSD);
 char *removeLastChar (char *str);
 char *getType(unsigned char t);
+int dontInclude(struct dirent *d);
+
+
 
 
 int main(int argc, char * argv[]){
@@ -134,7 +160,7 @@ void createLog(char *sourceDir, char *logFilePath){
 char writeDirToFile(FILE *fLN, char *cSD){
 	struct stat *st = malloc(sizeof(struct stat));
 	struct dirent **nameList;
-    int count = scandir(cSD, &nameList, NULL, alphasort);
+    int count = scandir(cSD, &nameList, dontInclude, alphasort);
 	long isDirectory = 0;
 	
 	while(count--){
@@ -152,9 +178,9 @@ char writeDirToFile(FILE *fLN, char *cSD){
 				nameList[count]->d_name);				/* DataName */
 		
 		if (isDirectory == DT_DIR){						/* Checks if file is directory */
-			struct dirent **nameListCopy = nameList;
+//			struct dirent **nameListCopy = nameList;
 //			writeDirToFile(fLN, nameListCopy[count]->d_name);/* Recursively writes directories to file */
-			scandir(cSD, &nameList, NULL, alphasort);
+			scandir(nameList[count]->d_name, &nameList, NULL, alphasort);
 
 		}
 		
@@ -163,6 +189,17 @@ char writeDirToFile(FILE *fLN, char *cSD){
 	free(st);
 	free(nameList);
 	return 0;
+}
+
+/**
+ * @return	0			If directory entry IS NOT to be included
+ * @return	non-zero	If directory entry IS to be included
+ */
+int dontInclude(struct dirent *d){
+	if (!strcmp(d->d_name,".") || !strcmp(d->d_name,".."))
+		return 0;
+	else
+		return 1;
 }
 
 /**
