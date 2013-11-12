@@ -29,13 +29,14 @@ int sort_atoz(const void *i1, const void *i2);
 void listdir(FILE *f, const char *name, int level);
 char *removeFirstChar(char *cp, char c[], long i);
 char *changeChar(char c[], char remove, char add);
-int copyDirHelper(char *cpSD, char *cpPP);
+void copyDirHelper(char *cpSD, char *cpPP);
+void removeFilesInDir(char *destinationDir);
 
 /*----------------------------------GLOBAL VARIABLES----------------------------------------------*/
 
 int logIsSame = 0;
-char workingDir[200];
-char *cpWD = &workingDir[0];
+long maxBackups = 0;
+
 
 /*------------------------------------------------------------------------------------------------*/
 /*-----------------------------------MAIN---------------------------------------------------------*/
@@ -44,7 +45,6 @@ char *cpWD = &workingDir[0];
 int main(int argc, char * argv[]){
 	DIR *dSD = NULL;					/* source directory */
 	DIR *dDD = NULL;					/* destination directory */
-	long maxBackups = 0;
 	char srcDirName[FILENAME_MAX];		/* source directory name */
 	char *pSDN = &srcDirName[0];		/* pointer to the source directory name */
 	char destDirName[FILENAME_MAX];		/* destination directory name */
@@ -112,7 +112,8 @@ int main(int argc, char * argv[]){
 	
 	createLog(pSDN, pDDN);
 	
-	copyDir(pSDN, pDDN);
+	if (!logIsSame)
+		copyDir(pSDN, pDDN);
 	
 	closedir(dDD);
 	return 0;
@@ -234,30 +235,24 @@ int compareLog(FILE *oldLogFile, FILE *newLogFile){
  * @return	0						Otherwise
  */
 int copyFile(char *sourcePath, char *destinationPath){
-//	char pathSrc[100];
-//	snprintf(path, sizeof(pathOld)-1, "%s/%s", logFilePath, LOG_LAST_FILENAME);
-//	FILE *logOld = fopen(pathSrc, "w+");	/* opens files for writing and reading */
-//
-//	
-//	
-//	long lSize;
-//	char * buffer;
-//	
-//	/* obtain file size: */
-//	fseek (logNew , 0 , SEEK_END);
-//	lSize = ftell (logNew);
-//	rewind (logNew);
-//	
-//	/* allocate memory to contain the whole file: */
-//	buffer = (char*) malloc (sizeof(char)*lSize);
-//	
-//	/* copy the file into the buffer: */
-//	fread (buffer, 1, lSize, logNew);
-//	fwrite(buffer, 1, lSize, logOld);
-//	
-//	free (buffer);
-//	fclose(logNew);		/* close logNew file */
-//	fclose(logOld);		/* close logOld file */
+	FILE *srcFile = fopen(sourcePath, "r");			/* opens source file for reading */
+	FILE *destFile = fopen(destinationPath, "w");	/* opens destination file for writing */
+	
+	long lSize;
+	char * buffer;
+	
+	/* obtain file size: */
+	fseek (srcFile , 0 , SEEK_END);
+	lSize = ftell (srcFile);
+	rewind (srcFile);
+	
+	buffer = (char*) malloc (sizeof(char)*lSize);	/* allocate memory to contain the whole file: */
+	fread (buffer, 1, lSize, srcFile);				/* copy the source file into the buffer */
+	fwrite(buffer, 1, lSize, destFile);				/* write buffer to destination file */
+	
+	free (buffer);			/* free bufer */
+	fclose(srcFile);		/* close logNew file */
+	fclose(destFile);		/* close logOld file */
 
 	return 0;
 }
@@ -290,6 +285,11 @@ int copyDir(char *sourceDir, char *backupDir){
 #ifdef debug_copyDir
 	printf("\nBackup Directory: %s\nprePath: %s\n\n", backupDir, prePath);
 #endif
+	
+	if (((getNumOfBackup(backupDir)+1)>maxBackups)){	/* If more backups (including new backup) than max */
+		removeOldestBackup(backupDir);					/* then remove oldest backup */
+	}
+	
 	/* The behavior of mkdir is undefined for anything other than the "permission" bits */
 	if (mkdir(prePath, 0777))
 		perror(prePath);
@@ -309,36 +309,116 @@ int copyDir(char *sourceDir, char *backupDir){
 }
 
 
-/*-----------------------------------HELPER FUNCTIONS---------------------------------------------*/
-
-int copyDirHelper(char *cpSD, char *cpPP){
+/*------------------------------GET NUMBER OF BACKUPS---------------------------------------------*/
+/**
+ * @return	int i	Number of existing backups under destinationDir
+ */
+int getNumOfBackup(char *destinationDir){
+	int i = 0;
 	struct dirent **entry;
-	struct stat *st = (struct stat*) malloc(sizeof(struct stat));
+	int n = scandir(destinationDir, &entry, NULL, NULL);
+	while(n--){
+		if (entry[n]->d_type == DT_DIR) {
+			i++;
+		}
+	}
+	return i;
+}
 
-	int n = scandir(cpSD, &entry,NULL, alphasort);
+
+/*------------------------------REMOVE OLDEST BACKUP----------------------------------------------*/
+
+/**
+ * @details	recursively deletes backups if number of backups in file is larger than the difined maxBackups.
+ */
+int removeOldestBackup(char *destinationDir){
+	DIR *dir;
+	if ((dir = opendir(destinationDir)))
+		return 0;
+	closedir(dir);
+	struct dirent **entry;
+	int n = scandir(destinationDir, &entry, NULL, alphasort);	/* sorts files so oldest is first */
 
 	while(n--){
-        if (entry[n]->d_type == DT_DIR) {
-            char path[150];
-			stat(entry[n]->d_name, st);	/* create statistics for directory */
-            snprintf(path, sizeof(path)-1, "%s/%s", cpPP, entry[n]->d_name);
+		/* creates string with destination directory plus the next file/directory name */
+		char backupPath[100];
+		snprintf(backupPath, sizeof(backupPath)-1, "%s/%s", destinationDir, entry[n]->d_name);
+
+		if (entry[n]->d_type == DT_DIR) {
+			if ((getNumOfBackup(destinationDir)>maxBackups)){	/* If more backups than max */
+				removeFilesInDir(backupPath);
+				remove(entry[n]->d_name);			/* removes backups */
+//				removeOldestBackup(destinationDir);	/* recursively deletes backups */
+			}
+		}
+	}
+	
+	return 0;
+}
+
+
+/*-----------------------------------HELPER FUNCTIONS---------------------------------------------*/
+
+void removeFilesInDir(char *destinationDir){
+	struct dirent **entry;
+	int n = scandir(destinationDir, &entry, NULL, NULL);
+
+	while(n--){
+		/* creates string with destination directory plus the next file/directory name */
+		char backupPath[100];
+		snprintf(backupPath, sizeof(backupPath)-1, "%s/%s", destinationDir, entry[n]->d_name);
+		
+		if (entry[n]->d_type != DT_DIR) {
+			remove(entry[n]->d_name);			/* removes backups */
+			removeOldestBackup(backupPath);
+			
+		}
+	}
+}
+
+
+void copyDirHelper(char *srcDir, char *destDir){
+	DIR *dir;
+	DIR *dir2;
+	if (!(dir = opendir(srcDir)))
+        return;
+	closedir(dir);
+	
+	if (!(dir2 = opendir(destDir)))
+        return;
+	closedir(dir2);
+	
+	struct dirent **entry;
+	int n = scandir(srcDir, &entry, NULL, NULL);
+	struct stat *st = (struct stat*) malloc(sizeof(struct stat));
+
+	while(n--){
+		stat(entry[n]->d_name, st);	/* create statistics for directory */
+		
+		char srcPath[100];
+		char backupPath[100];
+		snprintf(srcPath, sizeof(srcPath)-1, "%s/%s", srcDir, entry[n]->d_name);
+		snprintf(backupPath, sizeof(backupPath)-1, "%s/%s", destDir, entry[n]->d_name);
+        
+		if (entry[n]->d_type == DT_DIR) {
             if (strcmp(entry[n]->d_name, ".") == 0 || strcmp(entry[n]->d_name, "..") == 0)
                 continue;
 			
 			/* The behavior of mkdir is undefined for anything other than the "permission" bits */
-			if (mkdir(path, 0777))
-				perror(path);
+			if (mkdir(backupPath, 0777))
+				perror(backupPath);
 			/* So we need to set the sticky/executable bits explicitly with chmod after calling mkdir */
-			if (chmod(path, 07777))
-				perror(path);
+			if (chmod(backupPath, 07777))
+				perror(backupPath);
 			
-			copyDirHelper(entry[n]->d_name, path);
+			copyDirHelper(srcPath, backupPath);
 		}
-		//		else
-		//		copyFile();
-		
+		else{
+			copyFile(srcPath, backupPath);
+		}
 	}
-	return 0;
+	
+	free(st);
 }
 
 

@@ -3,18 +3,18 @@ DT_DIR	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	engl106
     DT_REG	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	essay.pdf
     DT_REG	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	essay.docx
 DT_DIR	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	empty2
-    DT_DIR	476	Mon Nov 11 21:10:21 2013	Mon Nov 11 21:10:21 2013	seriously
+    DT_DIR	476	Tue Nov 12 12:10:11 2013	Tue Nov 12 12:10:11 2013	seriously
         DT_DIR	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	kidding
             DT_DIR	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	real-empty
             DT_REG	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	arribba.wav
             DT_REG	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	LICENSE
 DT_DIR	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	empty
-    DT_DIR	476	Mon Nov 11 21:10:21 2013	Mon Nov 11 21:10:21 2013	Empty
+    DT_DIR	476	Tue Nov 12 12:10:11 2013	Tue Nov 12 12:10:11 2013	Empty
 DT_DIR	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	cs240
-    DT_DIR	476	Mon Nov 11 21:10:21 2013	Mon Nov 11 21:10:21 2013	solution
-        DT_REG	13335	Mon Nov 11 21:10:19 2013	Mon Nov 11 21:10:19 2013	backup.c
-    DT_REG	476	Mon Nov 11 21:10:21 2013	Mon Nov 11 21:10:21 2013	hello.s
-    DT_REG	476	Mon Nov 11 21:10:21 2013	Mon Nov 11 21:10:21 2013	hello.exe
-    DT_REG	476	Mon Nov 11 21:10:21 2013	Mon Nov 11 21:10:21 2013	hello.c
+    DT_DIR	476	Tue Nov 12 12:10:11 2013	Tue Nov 12 12:10:11 2013	solution
+        DT_REG	15798	Tue Nov 12 12:09:37 2013	Tue Nov 12 12:09:37 2013	backup.c
+    DT_REG	476	Tue Nov 12 12:10:11 2013	Tue Nov 12 12:10:11 2013	hello.s
+    DT_REG	476	Tue Nov 12 12:10:11 2013	Tue Nov 12 12:10:11 2013	hello.exe
+    DT_REG	476	Tue Nov 12 12:10:11 2013	Tue Nov 12 12:10:11 2013	hello.c
 DT_REG	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	boss.jpg
 DT_REG	6148	Mon Nov 11 17:47:45 2013	Mon Nov 11 17:47:45 2013	.DS_Store
