@@ -34,6 +34,7 @@
 		E0ADD6AF1822F1F8003A5CFF /* CS240_Project3.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = CS240_Project3.1; sourceTree = "<group>"; };
 		E0ADD6BB1822F25C003A5CFF /* backup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = backup.h; sourceTree = "<group>"; };
 		E0ADD6C01822F2DC003A5CFF /* backup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = backup.c; sourceTree = "<group>"; };
+		E0DAF9D31830F08700784529 /* log.last */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = log.last; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -50,6 +51,7 @@
 		E0A06BC61829B443006167DE /* backupDir */ = {
 			isa = PBXGroup;
 			children = (
+				E0DAF9D31830F08700784529 /* log.last */,
 				E0A06BC71829B443006167DE /* log.new */,
 			);
 			path = backupDir;
