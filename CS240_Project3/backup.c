@@ -29,6 +29,7 @@ int sort_atoz(const void *i1, const void *i2);
 void listdir(FILE *f, const char *name, int level);
 char *removeFirstChar(char *cp, char c[], long i);
 char *changeChar(char c[], char remove, char add);
+int copyDirHelper(char *cpSD, char *cpPP);
 
 /*----------------------------------GLOBAL VARIABLES----------------------------------------------*/
 
@@ -275,7 +276,6 @@ int copyFile(char *sourcePath, char *destinationPath){
  */
 int copyDir(char *sourceDir, char *backupDir){
 	
-    struct dirent **entry;
 	struct stat *st = (struct stat*) malloc(sizeof(struct stat));
 	
 	char *t_YMD = (char *) malloc(sizeof(13));
@@ -283,41 +283,26 @@ int copyDir(char *sourceDir, char *backupDir){
 	
 	/* Create backup directory if it does not exist */
 	char prePath[100];
-	int n = scandir(sourceDir, &entry,NULL, alphasort);
 	strftime(t_YMD, 13, "%F", localtime(&(st->st_ctime)));
 	strftime(t_HMS, 9, "%T", localtime(&(st->st_ctime)));
 	t_HMS = changeChar(t_HMS, ':', '-');
 	snprintf(prePath, sizeof(prePath)-1, "%s/%s-%s", backupDir, t_YMD, t_HMS);
+#ifdef debug_copyDir
 	printf("\nBackup Directory: %s\nprePath: %s\n\n", backupDir, prePath);
+#endif
 	/* The behavior of mkdir is undefined for anything other than the "permission" bits */
 	if (mkdir(prePath, 0777))
 		perror(prePath);
 	/* So we need to set the sticky/executable bits explicitly with chmod after calling mkdir */
 	if (chmod(prePath, 07777))
 		perror(prePath);
-	
 
-	while(n--){
-        if (entry[n]->d_type == DT_DIR) {
-            char path[150];
-			stat(entry[n]->d_name, st);	/* create statistics for directory */
-            int len = snprintf(path, sizeof(path)-1, "%s/%s", prePath, entry[n]->d_name);
-            if (strcmp(entry[n]->d_name, ".") == 0 || strcmp(entry[n]->d_name, "..") == 0)
-                continue;
-			/* The behavior of mkdir is undefined for anything other than the "permission" bits */
-			if (mkdir(path, 0777))
-				perror(path);
-			
-			/* So we need to set the sticky/executable bits explicitly with chmod after calling mkdir */
-			if (chmod(path, 07777))
-				perror(path);
-//            copyDir(entry[n]->d_name, path);
-		}
-//		else
-//		copyFile();
-		
-	}
 	free(st);
+
+	
+	copyDirHelper(sourceDir, prePath);
+	
+	
 	free(t_YMD);
 	free(t_HMS);
 	return 0;
@@ -325,6 +310,37 @@ int copyDir(char *sourceDir, char *backupDir){
 
 
 /*-----------------------------------HELPER FUNCTIONS---------------------------------------------*/
+
+int copyDirHelper(char *cpSD, char *cpPP){
+	struct dirent **entry;
+	struct stat *st = (struct stat*) malloc(sizeof(struct stat));
+
+	int n = scandir(cpSD, &entry,NULL, alphasort);
+
+	while(n--){
+        if (entry[n]->d_type == DT_DIR) {
+            char path[150];
+			stat(entry[n]->d_name, st);	/* create statistics for directory */
+            snprintf(path, sizeof(path)-1, "%s/%s", cpPP, entry[n]->d_name);
+            if (strcmp(entry[n]->d_name, ".") == 0 || strcmp(entry[n]->d_name, "..") == 0)
+                continue;
+			
+			/* The behavior of mkdir is undefined for anything other than the "permission" bits */
+			if (mkdir(path, 0777))
+				perror(path);
+			/* So we need to set the sticky/executable bits explicitly with chmod after calling mkdir */
+			if (chmod(path, 07777))
+				perror(path);
+			
+			copyDirHelper(entry[n]->d_name, path);
+		}
+		//		else
+		//		copyFile();
+		
+	}
+	return 0;
+}
+
 
 char *changeChar(char c[], char remove, char add){
 	int i = 0;
