@@ -1,20 +1,20 @@
-DT_REG	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	in-class journal.jnt
-DT_DIR	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	engl106
-    DT_REG	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	essay.pdf
-    DT_REG	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	essay.docx
-DT_DIR	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	empty2
-    DT_DIR	476	Tue Nov 12 12:10:11 2013	Tue Nov 12 12:10:11 2013	seriously
-        DT_DIR	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	kidding
-            DT_DIR	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	real-empty
-            DT_REG	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	arribba.wav
-            DT_REG	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	LICENSE
-DT_DIR	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	empty
-    DT_DIR	476	Tue Nov 12 12:10:11 2013	Tue Nov 12 12:10:11 2013	Empty
-DT_DIR	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	cs240
-    DT_DIR	476	Tue Nov 12 12:10:11 2013	Tue Nov 12 12:10:11 2013	solution
-        DT_REG	15798	Tue Nov 12 12:09:37 2013	Tue Nov 12 12:09:37 2013	backup.c
-    DT_REG	476	Tue Nov 12 12:10:11 2013	Tue Nov 12 12:10:11 2013	hello.s
-    DT_REG	476	Tue Nov 12 12:10:11 2013	Tue Nov 12 12:10:11 2013	hello.exe
-    DT_REG	476	Tue Nov 12 12:10:11 2013	Tue Nov 12 12:10:11 2013	hello.c
-DT_REG	0	Wed Dec 31 19:00:00 1969	Wed Dec 31 19:00:00 1969	boss.jpg
-DT_REG	6148	Mon Nov 11 17:47:45 2013	Mon Nov 11 17:47:45 2013	.DS_Store
+DT_REG	10072	Fri Oct  4 23:43:54 2013	Fri Oct  4 23:43:54 2013	in-class journal.jnt
+DT_DIR	136	Sat Oct 19 00:01:46 2013	Sat Oct 19 00:01:46 2013	engl106
+	DT_REG	164200	Fri Oct  4 23:56:38 2013	Fri Oct  4 23:56:38 2013	essay.pdf
+	DT_REG	89554	Fri Oct  4 23:38:24 2013	Fri Oct  4 23:38:24 2013	essay.docx
+DT_DIR	102	Sat Oct 19 00:01:46 2013	Sat Oct 19 00:01:46 2013	empty2
+	DT_DIR	102	Sat Oct 19 00:01:46 2013	Sat Oct 19 00:01:46 2013	seriously
+		DT_DIR	170	Sat Oct 19 00:01:46 2013	Sat Oct 19 00:01:46 2013	kidding
+			DT_DIR	68	Sat Oct 12 18:55:30 2013	Sat Oct 12 18:55:30 2013	real-empty
+			DT_REG	41094	Fri Oct  4 23:59:02 2013	Fri Oct  4 23:59:02 2013	arribba.wav
+			DT_REG	415	Sat Oct  5 00:00:56 2013	Sat Oct  5 00:00:56 2013	LICENSE
+DT_DIR	102	Sat Oct 19 00:01:46 2013	Sat Oct 19 00:01:46 2013	empty
+	DT_DIR	68	Sat Oct 12 18:55:30 2013	Sat Oct 12 18:55:30 2013	Empty
+DT_DIR	204	Sat Oct 19 00:01:46 2013	Sat Oct 19 00:01:46 2013	cs240
+	DT_DIR	102	Sat Oct 19 00:01:46 2013	Sat Oct 19 00:01:46 2013	solution
+		DT_REG	32	Fri Oct  4 23:52:20 2013	Fri Oct  4 23:52:20 2013	backup.c
+	DT_REG	548	Fri Oct  4 23:40:44 2013	Fri Oct  4 23:40:44 2013	hello.s
+	DT_REG	90096	Fri Oct  4 23:40:40 2013	Fri Oct  4 23:40:40 2013	hello.exe
+	DT_REG	83	Fri Oct  4 23:39:34 2013	Fri Oct  4 23:39:34 2013	hello.c
+DT_REG	55796	Sat Feb  4 22:46:22 2012	Sat Feb  4 22:46:22 2012	boss.jpg
+DT_REG	6148	Sun Nov 10 20:32:40 2013	Sun Nov 10 20:32:40 2013	.DS_Store

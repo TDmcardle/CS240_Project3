@@ -2,7 +2,8 @@
 #define LOG_LAST_FILENAME	"log.last"
 #define LOG_NEW_FILENAME	"log.new"
 #define DEFAULT_MAX_BACKUPS	9
-
+//#define debug_compareLog
+//#define debug_copyDir
 /**
  * Required function stub signatures
  */

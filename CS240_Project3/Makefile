@@ -38,7 +38,7 @@ all: target
 
 target: backup.c
 	$(COMPILE) -o $@ $^
-	$(RUNTARGET) -s ./userData -d ./backupDir -m 7
+	$(RUNTARGET) -s ./userData -d ./backupDir -m 3
 
 
 #------------- End Symbolic Targets ---------------------------------#

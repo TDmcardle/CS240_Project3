@@ -31,6 +31,8 @@ char *removeFirstChar(char *cp, char c[], long i);
 char *changeChar(char c[], char remove, char add);
 void copyDirHelper(char *cpSD, char *cpPP);
 void removeFilesInDir(char *destinationDir);
+char *addTabs(int i, char t[]);
+
 
 /*----------------------------------GLOBAL VARIABLES----------------------------------------------*/
 
@@ -138,27 +140,25 @@ int main(int argc, char * argv[]){
  * @param	char *logFilePath	destination directory name used to store the logfile
  */
 void createLog(char *sourceDir, char *logFilePath){
-	char pathNew[100];
-	snprintf(pathNew, sizeof(pathNew)-1, "%s/%s", logFilePath, LOG_NEW_FILENAME);
-	FILE *logNew = fopen(pathNew, "w+");	/* opens files for writing and reading */
-	char pathOld[100];
-	snprintf(pathOld, sizeof(pathOld)-1, "%s/%s", logFilePath, LOG_LAST_FILENAME);
-	FILE *logOld = fopen(pathOld, "w+");	/* opens files for writing and reading */
+	char pathNew[200] = "";
+	snprintf(pathNew, sizeof(pathNew), "%s/%s", logFilePath, LOG_NEW_FILENAME);
+	FILE *logNew = NULL;
+	logNew = fopen(pathNew, "w+");	/* opens files for writing and reading */
 	
-	listdir(logNew, sourceDir, 0);
-
-	logIsSame = compareLog(logOld, logNew);
-#ifdef debug_compareLog
-	fprintf(stderr, "Log comparison is(1=same,0=different): %d\n", logIsSame);
-#endif
+	char pathOld[200] = "";
+	snprintf(pathOld, sizeof(pathOld), "%s/%s", logFilePath, LOG_LAST_FILENAME);
+	FILE *logOld = NULL;
+	logOld = fopen(pathOld, "r");	/* opens files for writing and reading */
 	
-	/* compute the size of the file */
-//	fseek(logNew, 0, SEEK_END) ;
-//	fsizeNew = ftell(logNew);
+	listdir(logNew, sourceDir, 0);			/* Creates the new log file */
 
-	if (!logIsSame){
+	/* If the old and new logs are different, then update the old log */
+	if (!(logIsSame = compareLog(logOld, logNew))){
 		long lSize;
 		char * buffer;
+		
+		fclose(logOld);
+		logOld = fopen(pathOld, "w+");
 				
 		/* obtain file size: */
 		fseek (logNew , 0 , SEEK_END);
@@ -175,6 +175,9 @@ void createLog(char *sourceDir, char *logFilePath){
 		free (buffer);
 	}
 	
+#ifdef debug_compareLog
+	fprintf(stderr, "Log comparison is(1=same,0=different): %d\n", logIsSame);
+#endif
 	
 	fclose(logNew);		/* close logNew file */
 	fclose(logOld);		/* close logOld file */
@@ -188,20 +191,22 @@ void createLog(char *sourceDir, char *logFilePath){
  * @return	0	Otherwise
  */
 int compareLog(FILE *oldLogFile, FILE *newLogFile){
-	long fsizeNew, fsizeOld;
+	long fsizeNew = 0;
+	long fsizeOld = 0;
 	long lSize = 0;
-	char * bufferNew;
-	char * bufferOld;
+	int ret = 0;
+
 	
 	/* allocate memory to contain the whole file: */
-	bufferNew = (char*) malloc (sizeof(char)*lSize);
-	bufferOld = (char*) malloc (sizeof(char)*lSize);
+	char * bufferNew = (char*) malloc (sizeof(char)*lSize);
+	char * bufferOld = (char*) malloc (sizeof(char)*lSize);
 	
-	/* compute the size of the file */
+	/* compute the size of the new log file */
 	fseek(newLogFile, 0, SEEK_END) ;
 	fsizeNew = ftell(newLogFile);
 	rewind(newLogFile);
 	
+	/* compute the size of the old log file */
 	fseek(oldLogFile, 0, SEEK_END) ;
 	fsizeOld = ftell(oldLogFile);
 	rewind(oldLogFile);
@@ -211,16 +216,18 @@ int compareLog(FILE *oldLogFile, FILE *newLogFile){
 	fprintf(stderr, "Old log size is: %ld\n", fsizeOld);
 #endif
 	
-	if (fsizeOld-fsizeNew)
-		return 0;
-	
 	fread (bufferNew,1,lSize,newLogFile);
 	fread (bufferOld,1,lSize,oldLogFile);
 	
-	if (strcmp(bufferNew, bufferOld))
-		return 0;
+	if ((fsizeOld-fsizeNew) || strcmp(bufferNew, bufferOld))
+		ret = 0;
 	else
-		return 1;
+		ret = 1;
+	
+	free(bufferNew);
+	free(bufferOld);
+	
+	return ret;
 }
 
 
@@ -238,15 +245,14 @@ int copyFile(char *sourcePath, char *destinationPath){
 	FILE *srcFile = fopen(sourcePath, "r");			/* opens source file for reading */
 	FILE *destFile = fopen(destinationPath, "w");	/* opens destination file for writing */
 	
-	long lSize;
-	char * buffer;
+	long lSize = 0;
 	
 	/* obtain file size: */
 	fseek (srcFile , 0 , SEEK_END);
 	lSize = ftell (srcFile);
 	rewind (srcFile);
 	
-	buffer = (char*) malloc (sizeof(char)*lSize);	/* allocate memory to contain the whole file: */
+	char * buffer = (char*) malloc (sizeof(char)*lSize);	/* allocate memory to contain the whole file: */
 	fread (buffer, 1, lSize, srcFile);				/* copy the source file into the buffer */
 	fwrite(buffer, 1, lSize, destFile);				/* write buffer to destination file */
 	
@@ -254,7 +260,7 @@ int copyFile(char *sourcePath, char *destinationPath){
 	fclose(srcFile);		/* close logNew file */
 	fclose(destFile);		/* close logOld file */
 
-	return 0;
+	return 1;
 }
 
 
@@ -272,31 +278,43 @@ int copyFile(char *sourcePath, char *destinationPath){
 int copyDir(char *sourceDir, char *backupDir){
 	
 	struct stat *st = (struct stat*) malloc(sizeof(struct stat));
-	
+	stat(sourceDir, st);	/* create statistics for directory */
+
+
 	char *t_YMD = (char *) malloc(sizeof(13));
 	char *t_HMS = (char *) malloc(sizeof(9));
 	
 	/* Create backup directory if it does not exist */
-	char prePath[100];
-	strftime(t_YMD, 13, "%F", localtime(&(st->st_ctime)));
-	strftime(t_HMS, 9, "%T", localtime(&(st->st_ctime)));
+	char prePath[200] = "";
+	strftime(t_YMD, 13, "%F", localtime(&(st->st_mtime)));
+	strftime(t_HMS, 9, "%T", localtime(&(st->st_mtime)));
 	t_HMS = changeChar(t_HMS, ':', '-');
 	snprintf(prePath, sizeof(prePath)-1, "%s/%s-%s", backupDir, t_YMD, t_HMS);
 #ifdef debug_copyDir
-	printf("\nBackup Directory: %s\nprePath: %s\n\n", backupDir, prePath);
+	printf("\nSource Directory: %s\nBackup Directory: %s\nprePath: %s\n\n", sourceDir, backupDir, prePath);
 #endif
 	
-	if (((getNumOfBackup(backupDir)+1)>maxBackups)){	/* If more backups (including new backup) than max */
-		removeOldestBackup(backupDir);					/* then remove oldest backup */
-	}
+//	if (((getNumOfBackup(backupDir)+1)>maxBackups)){	/* If more backups (including new backup) than max */
+//		removeOldestBackup(backupDir);					/* then remove oldest backup */
+//	}
 	
+#ifdef debug_copyDir
+	int err = 0;
+	fprintf(stderr, "\n*** Debugging copyDir (in copyDir) ***\n");
 	/* The behavior of mkdir is undefined for anything other than the "permission" bits */
-	if (mkdir(prePath, 0777))
+	if ((err = mkdir(prePath, 0777)))
 		perror(prePath);
+	fprintf(stderr, "mkdir: %d\n", err);
 	/* So we need to set the sticky/executable bits explicitly with chmod after calling mkdir */
-	if (chmod(prePath, 07777))
+	if ((err = chmod(prePath, 07777)))
 		perror(prePath);
-
+	fprintf(stderr, "chmod: %d\n", err);
+	fprintf(stderr, "*** END Debugging copyDir (in copyDir) ***\n\n");
+#else
+	mkdir(prePath, 0777);
+	chmod(prePath, 07777);
+#endif
+	
 	free(st);
 
 	
@@ -305,7 +323,7 @@ int copyDir(char *sourceDir, char *backupDir){
 	
 	free(t_YMD);
 	free(t_HMS);
-	return 0;
+	return 1;
 }
 
 
@@ -332,7 +350,7 @@ int getNumOfBackup(char *destinationDir){
  * @details	recursively deletes backups if number of backups in file is larger than the difined maxBackups.
  */
 int removeOldestBackup(char *destinationDir){
-	DIR *dir;
+	DIR *dir = NULL;
 	if ((dir = opendir(destinationDir)))
 		return 0;
 	closedir(dir);
@@ -341,7 +359,7 @@ int removeOldestBackup(char *destinationDir){
 
 	while(n--){
 		/* creates string with destination directory plus the next file/directory name */
-		char backupPath[100];
+		char backupPath[200];
 		snprintf(backupPath, sizeof(backupPath)-1, "%s/%s", destinationDir, entry[n]->d_name);
 
 		if (entry[n]->d_type == DT_DIR) {
@@ -359,27 +377,32 @@ int removeOldestBackup(char *destinationDir){
 
 /*-----------------------------------HELPER FUNCTIONS---------------------------------------------*/
 
+/**
+ * @details		Removes all files within a directory.
+ */
 void removeFilesInDir(char *destinationDir){
-	struct dirent **entry;
+	struct dirent **entry = NULL;
 	int n = scandir(destinationDir, &entry, NULL, NULL);
 
 	while(n--){
 		/* creates string with destination directory plus the next file/directory name */
-		char backupPath[100];
+		char backupPath[200];
 		snprintf(backupPath, sizeof(backupPath)-1, "%s/%s", destinationDir, entry[n]->d_name);
 		
 		if (entry[n]->d_type != DT_DIR) {
 			remove(entry[n]->d_name);			/* removes backups */
-			removeOldestBackup(backupPath);
 			
 		}
 	}
 }
 
-
+/**
+ * @details		Recursively copies each file and directory from source directory to the destination
+ *				directory.
+ */
 void copyDirHelper(char *srcDir, char *destDir){
-	DIR *dir;
-	DIR *dir2;
+	DIR *dir = NULL;
+	DIR *dir2 = NULL;
 	if (!(dir = opendir(srcDir)))
         return;
 	closedir(dir);
@@ -388,29 +411,37 @@ void copyDirHelper(char *srcDir, char *destDir){
         return;
 	closedir(dir2);
 	
-	struct dirent **entry;
+	struct dirent **entry = NULL;
 	int n = scandir(srcDir, &entry, NULL, NULL);
 	struct stat *st = (struct stat*) malloc(sizeof(struct stat));
 
 	while(n--){
 		stat(entry[n]->d_name, st);	/* create statistics for directory */
 		
-		char srcPath[100];
-		char backupPath[100];
+		char srcPath[200] = "";
+		char backupPath[200] = "";
 		snprintf(srcPath, sizeof(srcPath)-1, "%s/%s", srcDir, entry[n]->d_name);
 		snprintf(backupPath, sizeof(backupPath)-1, "%s/%s", destDir, entry[n]->d_name);
         
 		if (entry[n]->d_type == DT_DIR) {
             if (strcmp(entry[n]->d_name, ".") == 0 || strcmp(entry[n]->d_name, "..") == 0)
                 continue;
-			
+#ifdef debug_copyDir
+			int err = 0;
+			fprintf(stderr, "\n*** Debugging copyDir (in copyDirHelper) ***\n");
 			/* The behavior of mkdir is undefined for anything other than the "permission" bits */
-			if (mkdir(backupPath, 0777))
+			if ((err = mkdir(backupPath, 0777)))
 				perror(backupPath);
+			fprintf(stderr, "mkdir: %d\n", err);
 			/* So we need to set the sticky/executable bits explicitly with chmod after calling mkdir */
-			if (chmod(backupPath, 07777))
+			if ((err = chmod(backupPath, 07777)))
 				perror(backupPath);
-			
+			fprintf(stderr, "chmod: %d\n", err);
+			fprintf(stderr, "*** END Debugging copyDir (in copyDirHelper) ***\n\n");
+#else
+			mkdir(backupPath, 0777);
+			chmod(backupPath, 07777);
+#endif
 			copyDirHelper(srcPath, backupPath);
 		}
 		else{
@@ -421,7 +452,9 @@ void copyDirHelper(char *srcDir, char *destDir){
 	free(st);
 }
 
-
+/**
+ * @details		Changes a character in the specified array/string
+ */
 char *changeChar(char c[], char remove, char add){
 	int i = 0;
 	for (i=0; i<strlen(c); i++){
@@ -432,45 +465,55 @@ char *changeChar(char c[], char remove, char add){
 	return c;
 }
 
-
+/**
+ * @details		Used to recursively create the directories and files
+ */
 void listdir(FILE *f, const char *name, int level){
-    DIR *dir;
-    struct dirent **entry;
+    DIR *dir = NULL;
+    struct dirent **entry = NULL;
 	struct stat *st = (struct stat*) malloc(sizeof(struct stat));
     if (!(dir = opendir(name)))
         return;
 	int n = scandir(name, &entry,NULL, alphasort);
-	
+	char t_std[50] = ""; /* represents the national time or standard time format */
 	while(n--){
-		stat(entry[n]->d_name, st);	/* create statistics for directory */
+		char path[200] = "";
+		snprintf(path, sizeof(path)-1, "%s/%s", name, entry[n]->d_name);
+		
+		stat(path, st);	/* create statistics for directory */
+		strftime(t_std, sizeof(t_std), "%c", localtime(&(st->st_mtime)));
+		char tabs[50] = "";
         if (entry[n]->d_type == DT_DIR) {
-            char path[100];
-            int len = snprintf(path, sizeof(path)-1, "%s/%s", name, entry[n]->d_name);
-            path[len] = 0;
             if (strcmp(entry[n]->d_name, ".") == 0 || strcmp(entry[n]->d_name, "..") == 0)
                 continue;
-			fprintf(f, "%*s%s\t%ld\t%s\t%s\t%s\n",
-					level*4, "",
+			fprintf(f, "%s%s\t%ld\t%s\t%s\t%s\n",
+					addTabs(level, tabs),
 					getType(entry[n]->d_type),
 					(long)st->st_size,
-					removeLastChar(ctime(&(st->st_ctime))),
-					removeLastChar(ctime(&(st->st_mtime))),
+					t_std,
+					t_std,
 					entry[n]->d_name);
             listdir(f, path, level + 1);
         }
-		else
-			fprintf(f, "%*s%s\t%ld\t%s\t%s\t%s\n",
-					level*4, "",
+		else{
+			fprintf(f, "%s%s\t%ld\t%s\t%s\t%s\n",
+					addTabs(level, tabs),
 					getType(entry[n]->d_type),
 					(long)st->st_size,
-					removeLastChar(ctime(&(st->st_ctime))),
-					removeLastChar(ctime(&(st->st_mtime))),
+					t_std,
+					t_std,
 					entry[n]->d_name);
+		}
+
 	}
     closedir(dir);
 	free(st);
 }
 
+
+/**
+ * @details		Sorts the two parameters in ascending alphabetical order (a-z) (opposite of alphasort)
+ */
 int sort_atoz(const void *i1, const void *i2){
 	
 	int item1 = *(int*)i1;
@@ -540,7 +583,19 @@ char *getType(unsigned char t){
 	}
 }
 
-
+/**
+ * @function	char *addTabs(int i, char *t)
+ * @details		Adds i number of tabs
+ * @param	int i		number of tabs
+ * @param	char *t		string to add tabs to
+ */
+char *addTabs(int i, char *t){
+	int ntabs = i;
+	while (ntabs--){
+		snprintf(t, sizeof(t), "%s\t", t);
+	}
+	return t;
+}
 
 
 
